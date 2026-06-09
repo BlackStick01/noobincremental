@@ -1,0 +1,17 @@
+node_modules
+.next
+out
+.npm-cache
+.env*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+next-dev*.log
+homepage-*.png
+chrome-verify-profile*
+edge-verify-profile*
+noobincremental-site-static.zip
+chrome-tmp*/
+test_chrome.png
+trends_valid_docx_text.txt

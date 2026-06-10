@@ -25,15 +25,18 @@ export default function SearchBox({ items }) {
     <section className="content-panel">
       <h2>Site Search</h2>
       <label className="search-label" htmlFor="site-search">
-        Search wiki pages, guides, blog posts, patch notes, and codes
+        Search wiki pages, guides, blog posts, updates, and codes
       </label>
       <input
         id="site-search"
         className="search-input"
         value={query}
         onChange={(event) => setQuery(event.target.value)}
-        placeholder="Search codes, runes, prestige, tickets..."
+        aria-describedby="site-search-help"
       />
+      <p className="search-label" id="site-search-help">
+        Try codes, runes, prestige, Oof, LABUPDATE, Prism, or verification.
+      </p>
       <div className="search-results" aria-live="polite">
         {results.map((item) => (
           <Link className="search-result" href={item.url} key={`${item.url}-${item.title}`}>

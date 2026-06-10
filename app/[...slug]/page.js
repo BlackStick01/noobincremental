@@ -24,10 +24,10 @@ export async function generateMetadata({ params }) {
   }
 
   return pageMetadata({
-    title: page.description,
-    description: page.intro,
+    title: page.title,
+    description: page.description,
     path,
-    type: page.category === "Blog" ? "article" : "website",
+    type: page.category === "Blog" || page.category === "Updates" ? "article" : "website",
   });
 }
 
@@ -41,17 +41,20 @@ export default async function CatchAllPage({ params }) {
   }
 
   const schemaType =
-    page.category === "Patch Notes"
+    page.category === "Updates"
       ? "TechArticle"
       : page.category === "Blog" || page.category === "Wiki" || page.category === "Guide" || page.category === "Codes"
         ? "Article"
         : "WebPage";
+  const faqItems = page.faqGroups?.length
+    ? page.faqGroups.flatMap((group) => group.items)
+    : page.faq || [];
 
   return (
     <>
       <JsonLd data={breadcrumbJsonLd(page)} />
       <JsonLd data={articleJsonLd(page, schemaType)} />
-      {page.faq?.length ? <JsonLd data={faqJsonLd(page.faq)} /> : null}
+      {faqItems.length ? <JsonLd data={faqJsonLd(faqItems)} /> : null}
       <ContentPageView page={page} />
     </>
   );

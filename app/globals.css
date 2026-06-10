@@ -279,6 +279,18 @@ h3 {
   color: var(--yellow);
 }
 
+.badge-danger {
+  border-color: rgba(255, 118, 118, 0.5);
+  background: rgba(255, 118, 118, 0.12);
+  color: var(--red);
+}
+
+.badge-muted {
+  border-color: rgba(155, 178, 192, 0.35);
+  background: rgba(155, 178, 192, 0.08);
+  color: var(--muted);
+}
+
 .badge-verify {
   border-color: rgba(77, 163, 255, 0.45);
   background: rgba(77, 163, 255, 0.1);
@@ -452,6 +464,44 @@ code {
   font-weight: 900;
 }
 
+.copy-button:focus-visible,
+.nav a:focus-visible,
+.button:focus-visible,
+.wiki-card:focus-visible,
+.preview-card:focus-visible,
+.search-result:focus-visible {
+  outline: 3px solid rgba(32, 213, 242, 0.7);
+  outline-offset: 3px;
+}
+
+.code-groups {
+  display: grid;
+  gap: 16px;
+}
+
+.code-group {
+  margin-top: 0;
+}
+
+.table-note {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.badge-cloud,
+.verification-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.verification-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+}
+
 .article {
   max-width: 980px;
   margin: 0 auto;
@@ -501,11 +551,27 @@ code {
   gap: 12px;
 }
 
+.faq-group {
+  display: grid;
+  gap: 10px;
+}
+
+.faq-group h3 {
+  margin-top: 8px;
+  color: var(--green);
+}
+
 .faq-item {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: rgba(7, 16, 22, 0.45);
   padding: 14px;
+}
+
+.faq-item summary {
+  cursor: pointer;
+  color: var(--ink);
+  font-weight: 900;
 }
 
 .faq-item p {
@@ -547,7 +613,7 @@ code {
 
 .site-footer {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 18px;
   border-top: 1px solid var(--line);
   padding: 30px 0 42px;
@@ -565,6 +631,13 @@ code {
 
 .site-footer li {
   margin: 7px 0;
+}
+
+.site-footer small {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  line-height: 1.45;
 }
 
 .copyright {
@@ -598,7 +671,8 @@ code {
   .card-grid,
   .preview-grid,
   .source-grid,
-  .route-grid {
+  .route-grid,
+  .verification-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -642,6 +716,7 @@ code {
   .preview-grid,
   .source-grid,
   .route-grid,
+  .verification-grid,
   .site-footer {
     grid-template-columns: 1fr;
   }

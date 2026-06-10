@@ -3,9 +3,9 @@ import { site } from "../lib/siteData";
 import { pageMetadata, videoGameJsonLd } from "../lib/seo";
 
 export const metadata = pageMetadata({
-  title: "Noob Incremental Wiki - Codes, Upgrades, Runes, Prestige Guide",
+  title: "Noob Incremental Wiki - Codes, Runes, Upgrades and Prestige",
   description:
-    "Complete Noob Incremental Wiki with codes, upgrades, runes, prestige strategies, tickets, potions, stats, layers, and beginner progression guides.",
+    "Verified-first Noob Incremental Wiki with codes, runes, upgrades, prestige, stats, update watches, beginner routes, and safe Roblox guidance.",
 });
 
 export default function Home() {

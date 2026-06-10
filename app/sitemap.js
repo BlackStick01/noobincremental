@@ -6,7 +6,7 @@ export default function sitemap() {
   return allRoutes.map((route) => ({
     url: new URL(route, site.url).toString(),
     lastModified: new Date(site.lastUpdated),
-    changeFrequency: route === "/" ? "weekly" : "monthly",
-    priority: route === "/" ? 1 : 0.7,
+    changeFrequency: route.includes("/blog") || route.includes("/patch-notes") ? "monthly" : "weekly",
+    priority: route === "/" ? 1 : route.includes("/wiki") ? 0.8 : 0.7,
   }));
 }

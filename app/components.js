@@ -177,7 +177,7 @@ export function CodeTable() {
         <section className="content-panel code-group" key={group.title}>
           <h2>{group.title}</h2>
           <p>{group.description}</p>
-          <div className="table-wrap">
+          <div className="table-wrap desktop-codes-table">
             <table className="data-table code-table">
               <thead>
                 <tr>
@@ -216,9 +216,54 @@ export function CodeTable() {
               </tbody>
             </table>
           </div>
+          <div className="mobile-codes-list">
+            {group.rows.map((row) => (
+              <CodeCard key={row.code} row={row} />
+            ))}
+          </div>
         </section>
       ))}
     </div>
+  );
+}
+
+function CodeCard({ row }) {
+  const isCommunity = row.regularOrCommunity?.toLowerCase() === "community";
+
+  return (
+    <article className="code-card">
+      <div className="code-card-header">
+        <code>{row.code}</code>
+        <Badge tone={toneMap[row.status] || "default"}>{labelize(row.status)}</Badge>
+      </div>
+      <div className="code-card-row">
+        <span>Reward</span>
+        <strong>{row.reward}</strong>
+      </div>
+      <div className="code-card-row">
+        <span>Verification</span>
+        <Badge tone={toneMap[row.verification] || "verify"}>
+          {labelize(row.verification)}
+        </Badge>
+      </div>
+      {isCommunity ? (
+        <div className="code-card-row">
+          <span>Type</span>
+          <strong>{row.regularOrCommunity}</strong>
+        </div>
+      ) : null}
+      <div className="code-card-row">
+        <span>Last checked</span>
+        <span>{row.lastChecked}</span>
+      </div>
+      {row.notes ? (
+        <details className="code-card-details">
+          <summary>Verification details</summary>
+          <p>{row.notes}</p>
+        </details>
+      ) : null}
+      <CopyCodeButton value={row.code} />
+    </article>
   );
 }
 

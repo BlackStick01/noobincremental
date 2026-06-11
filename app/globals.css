@@ -612,6 +612,49 @@ code {
   align-items: start;
 }
 
+.snapshot-panel {
+  margin-top: 14px;
+}
+
+.snapshot-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.snapshot-grid span,
+.source-reference {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(7, 16, 22, 0.45);
+  padding: 12px;
+}
+
+.source-list-panel {
+  grid-column: 1 / -1;
+}
+
+.source-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.source-reference {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.source-reference h4,
+.source-reference p {
+  margin: 0;
+}
+
+.source-reference p {
+  color: var(--muted);
+}
+
 .article {
   max-width: 980px;
   margin: 0 auto;
@@ -654,6 +697,13 @@ code {
   margin: 8px 0;
   color: #c8dce8;
   line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.content-panel p,
+.source-card p,
+.source-reference p {
+  overflow-wrap: anywhere;
 }
 
 .faq-list {
@@ -825,6 +875,7 @@ code {
   .card-grid.compact,
   .preview-grid,
   .source-grid,
+  .source-list,
   .route-grid,
   .verification-grid,
   .site-footer {

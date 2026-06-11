@@ -6,9 +6,11 @@ import {
   legalLinks,
   mainNav,
   officialLinks,
+  publicGameSnapshot,
   routeSteps,
   searchIndex,
   site,
+  sources,
   updates,
   verificationBadges,
   verificationNotice,
@@ -19,13 +21,18 @@ const toneMap = {
   active: "ok",
   verify: "warn",
   expired: "muted",
+  "reported-active": "warn",
+  "reported-expired": "muted",
   official: "ok",
   "official-game-description": "ok",
   "multiple-public-sources": "verify",
+  "latest-public-source": "verify",
+  "community-code-reported": "warn",
   "single-public-source": "warn",
   "community-tested": "verify",
   "needs-in-game-verification": "warn",
   "conflicting-reports": "danger",
+  "latest-source-vs-older-source-conflict": "danger",
   archived: "muted",
 };
 
@@ -34,6 +41,39 @@ const labelize = (value = "") =>
     .split("-")
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
+
+const formatDate = (value) => {
+  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+  return new Intl.DateTimeFormat("en", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(`${value}T00:00:00Z`));
+};
+
+function DateValue({ value }) {
+  if (!value) return null;
+  return /^\d{4}-\d{2}-\d{2}$/.test(value) ? (
+    <time dateTime={value}>{formatDate(value)}</time>
+  ) : (
+    <span>{value}</span>
+  );
+}
+
+function SmartLink({ href, children, ...props }) {
+  const isExternal = href?.startsWith("http");
+  return (
+    <Link
+      href={href}
+      target={isExternal ? "_blank" : undefined}
+      rel={isExternal ? "noopener noreferrer" : undefined}
+      {...props}
+    >
+      {children}
+    </Link>
+  );
+}
 
 export function JsonLd({ data }) {
   return (
@@ -94,7 +134,7 @@ export function WikiFooter() {
         <ul>
           {officialLinks.map((link) => (
             <li key={link.label}>
-              <Link href={link.href}>{link.label}</Link>
+              <SmartLink href={link.href}>{link.label}</SmartLink>
               <small>{link.note}</small>
             </li>
           ))}
@@ -207,7 +247,9 @@ export function CodeTable() {
                       <p className="table-note">{row.notes}</p>
                     </td>
                     <td>{row.regularOrCommunity}</td>
-                    <td>{row.lastChecked}</td>
+                    <td>
+                      <DateValue value={row.lastChecked} />
+                    </td>
                     <td>
                       <CopyCodeButton value={row.code} />
                     </td>
@@ -254,7 +296,7 @@ function CodeCard({ row }) {
       ) : null}
       <div className="code-card-row">
         <span>Last checked</span>
-        <span>{row.lastChecked}</span>
+        <DateValue value={row.lastChecked} />
       </div>
       {row.notes ? (
         <details className="code-card-details">
@@ -461,10 +503,12 @@ export function HomePage() {
         <div className="source-grid">
           {officialLinks.map((link) => (
             <article className="source-card" key={link.label}>
-              <Badge tone="warn">Needs verification</Badge>
+              <Badge tone={link.href.includes("discord.gg") ? "warn" : "ok"}>
+                {link.href.includes("discord.gg") ? "Reported official link" : "Official source"}
+              </Badge>
               <h3>{link.label}</h3>
               <p>{link.note}</p>
-              <Link href={link.href}>Open source</Link>
+              <SmartLink href={link.href}>Open source</SmartLink>
             </article>
           ))}
         </div>
@@ -476,6 +520,13 @@ export function HomePage() {
 export function StatCards() {
   return (
     <section className="stat-section">
+      <div className="section-heading">
+        <h2>Verified Game Facts</h2>
+        <p>
+          These facts come from the official Roblox game description. Exact
+          lists, formulas, and thresholds remain undocumented.
+        </p>
+      </div>
       <div className="stat-grid">
         {gameStats.map((stat) => (
           <article className="stat-card" key={stat.label}>
@@ -486,8 +537,21 @@ export function StatCards() {
         ))}
       </div>
       <p className="snapshot-note">
-        Stats snapshot checked: {site.lastChecked}. Live values may change.
+        Game facts reviewed on <DateValue value={site.lastUpdated} />.
       </p>
+      <section className="content-panel snapshot-panel">
+        <h2>Public Game Snapshot</h2>
+        <p>
+          Volatile public statistics checked on{" "}
+          <DateValue value={publicGameSnapshot.checkedAt} />. Precise live
+          values should be refreshed by an API or scheduled review before being
+          treated as current.
+        </p>
+        <div className="snapshot-grid">
+          <span>Max players per server: {publicGameSnapshot.maxPlayers}</span>
+          <span>All-time peak: {publicGameSnapshot.allTimePeakPlayers}</span>
+        </div>
+      </section>
     </section>
   );
 }
@@ -537,7 +601,11 @@ export function SourceVerification({ page }) {
   return (
     <section className="content-panel source-verification">
       <h2>Source and Verification</h2>
-      {page.lastReviewed ? <p className="table-note">Last reviewed: {page.lastReviewed}</p> : null}
+      {page.lastReviewed ? (
+        <p className="table-note">
+          Last reviewed: <DateValue value={page.lastReviewed} />
+        </p>
+      ) : null}
       <div className="verification-grid">
         {page.confirmed?.length ? (
           <div>
@@ -560,13 +628,40 @@ export function SourceVerification({ page }) {
           </div>
         ) : null}
         {page.sources?.length ? (
-          <div>
+          <div className="source-list-panel">
             <h3>Sources</h3>
-            <ul className="info-list">
-              {page.sources.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
+            <div className="source-list">
+              {page.sources.map((item) => {
+                const ref = typeof item === "string" ? null : item;
+                const source =
+                  ref?.id && sources[ref.id]
+                    ? sources[ref.id]
+                    : typeof item === "string"
+                      ? { id: item, label: item, type: "legacy-note" }
+                      : null;
+
+                if (!source) return null;
+
+                return (
+                  <article className="source-reference" key={`${source.id}-${ref?.supports || ""}`}>
+                    <Badge tone={source.type === "official" ? "ok" : "verify"}>
+                      {source.type}
+                    </Badge>
+                    <h4>{source.label}</h4>
+                    {source.url ? (
+                      <SmartLink href={source.url}>Open source</SmartLink>
+                    ) : null}
+                    {source.accessedAt ? (
+                      <p>
+                        Last accessed: <DateValue value={source.accessedAt} />
+                      </p>
+                    ) : null}
+                    {ref?.supports ? <p>{ref.supports}</p> : null}
+                    {source.note ? <p>{source.note}</p> : null}
+                  </article>
+                );
+              })}
+            </div>
           </div>
         ) : null}
       </div>

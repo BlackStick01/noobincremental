@@ -1,4 +1,5 @@
 import "./globals.css";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { site } from "../lib/siteData";
 
 export const metadata = {
@@ -56,6 +57,7 @@ document.addEventListener('click', async function(event) {
           }}
         />
       </body>
+      <GoogleAnalytics gaId="G-Y2KMHSRQCK" />
     </html>
   );
 }
